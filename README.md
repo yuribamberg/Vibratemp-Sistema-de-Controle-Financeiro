@@ -1,8 +1,8 @@
-# Vibratemp — Sistema de Controle Financeiro
+Aqui está o README completo para você só copiar e colar:
 
 Sistema desktop desenvolvido em Java com interface gráfica JavaFX, criado para uso interno da Vibratemp Vidros Espelhos Molduras para controle financeiro da loja.
 
-## Funcionalidades
+Cadastro de Despesas: Registrar gastos da loja (descrição, valor e data)
 
 - **Cadastro de Receitas**: Vinculadas a clientes (nome, serviço, telefone, data, valor e status de pagamento)
 - **Cadastro de Despesas**: Registrar gastos da loja (descrição, valor e data)
@@ -11,9 +11,9 @@ Sistema desktop desenvolvido em Java com interface gráfica JavaFX, criado para 
 - **Pesquisa**: Busca por nome do cliente, serviço, data ou status
 - **Persistência de Dados**: Dados salvos permanentemente em banco de dados local (SQLite)
 
----
+Relatório Financeiro: Exibição de totais de receitas, despesas e saldo final
 
-## Estrutura do Projeto
+Pesquisa: Busca por nome do cliente, serviço, data ou status
 
 ```text
 ├── src/
@@ -36,14 +36,35 @@ Sistema desktop desenvolvido em Java com interface gráfica JavaFX, criado para 
 └── Iniciar.bat             # Script de execução rápida para o PC da loja
 ```
 
----
+Estrutura do Projeto
+Plaintext
+├── src/
+│   ├── MainApp.java        # Classe principal — inicia a interface gráfica
+│   ├── App.java            # Menu via terminal (versão anterior)
+│   ├── Transacao.java      # Classe abstrata base
+│   ├── Receita.java        # Herda Transacao — representa entrada de cliente
+│   ├── Despesa.java        # Herda Transacao — representa gasto da loja
+│   ├── Relatorio.java      # Interface com contrato ExibirResumo()
+│   ├── Database.java       # Conexão e operações com SQLite
+│   ├── TelaReceita.java    # Tela de cadastro de receita
+│   ├── TelaDespesa.java    # Tela de cadastro de despesa
+│   ├── TelaListar.java     # Tela de listagem de transações
+│   ├── TelaRelatorio.java  # Tela de relatório financeiro
+│   ├── TelaPesquisa.java   # Tela de pesquisa
+│   └── resources/
+│       └── estilo.css      # Estilo visual do sistema
+├── lib/
+│   └── sqlite-jdbc.jar     # Driver do banco de dados
+└── Iniciar.bat             # Script de execução rápida para o PC da loja
+Requisitos para o PC da Loja
+Java (JDK/JRE 21 ou superior) instalado na máquina.
 
 ## Requisitos para o PC da Loja
 
 - **Java (JDK/JRE 21 ou superior)** instalado na máquina.
 - Pasta do **JavaFX SDK 26.0.2** extraída na raiz do disco C: (`C:\javafx`).
 
----
+Copie a pasta JavaFX: Coloque a pasta do JavaFX SDK no caminho C:\javafx.
 
 ## Como Instalar e Rodar no PC da Loja
 
@@ -81,9 +102,10 @@ O sistema utiliza **SQLite**. O arquivo `vidracaria.db` é criado automaticament
 **Yuri Ivo Luiz Bamberg** Desenvolvido para uso interno da **Vibratemp Vidros Espelhos Molduras** 📍 R. Piauí, 1115 - Funcionários, Belo Horizonte / MG  
 📞 (31) 99586-3199  
 
----
+Status do Projeto
+[x] Interface gráfica funcional com JavaFX
 
-## Status do Projeto
+[x] Integração com SQLite
 
 - [x] Interface gráfica funcional com JavaFX
 - [x] Integração com SQLite
