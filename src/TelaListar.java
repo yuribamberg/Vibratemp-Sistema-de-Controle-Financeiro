@@ -17,42 +17,48 @@ public class TelaListar {
     }
 
     public static VBox criar() {
-        VBox layout = new VBox(15);
-        layout.setPadding(new Insets(20));
+    VBox layout = new VBox(15);
+    layout.setPadding(new Insets(20));
 
-        TableColumn<Receita, String> colCliente  = new TableColumn<>("Cliente");
-        TableColumn<Receita, String> colServico  = new TableColumn<>("Serviço");
-        TableColumn<Receita, String> colTelefone = new TableColumn<>("Telefone");
-        TableColumn<Receita, String> colData     = new TableColumn<>("Data");
-        TableColumn<Receita, Double> colValor    = new TableColumn<>("Valor");
-        TableColumn<Receita, String> colStatus   = new TableColumn<>("Status");
+    TableColumn<Receita, String> colCliente  = new TableColumn<>("Cliente");
+    TableColumn<Receita, String> colServico  = new TableColumn<>("Serviço");
+    TableColumn<Receita, String> colTelefone = new TableColumn<>("Telefone");
+    TableColumn<Receita, String> colData     = new TableColumn<>("Data");
+    TableColumn<Receita, Double> colValor    = new TableColumn<>("Valor");
+    TableColumn<Receita, String> colStatus   = new TableColumn<>("Status");
 
-        colCliente.setCellValueFactory(new PropertyValueFactory<>("nomeCliente"));
-        colServico.setCellValueFactory(new PropertyValueFactory<>("descricao"));
-        colTelefone.setCellValueFactory(new PropertyValueFactory<>("telefone"));
-        colData.setCellValueFactory(new PropertyValueFactory<>("data"));
-        colValor.setCellValueFactory(new PropertyValueFactory<>("valor"));
-        colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+    colCliente.setCellValueFactory(new PropertyValueFactory<>("nomeCliente"));
+    colServico.setCellValueFactory(new PropertyValueFactory<>("descricao"));
+    colTelefone.setCellValueFactory(new PropertyValueFactory<>("telefone"));
+    colData.setCellValueFactory(new PropertyValueFactory<>("data"));
+    colValor.setCellValueFactory(new PropertyValueFactory<>("valor"));
+    colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        tabelaReceitas.getColumns().addAll(colCliente, colServico, colTelefone, colData, colValor, colStatus);
+    tabelaReceitas.getColumns().addAll(colCliente, colServico, colTelefone, colData, colValor, colStatus);
 
-        TableColumn<Despesa, String> colDescricao = new TableColumn<>("Descrição");
-        TableColumn<Despesa, Double> colValorD    = new TableColumn<>("Valor");
-        TableColumn<Despesa, String> colDataD     = new TableColumn<>("Data");
+    TableColumn<Despesa, String> colDescricao = new TableColumn<>("Descrição");
+    TableColumn<Despesa, Double> colValorD    = new TableColumn<>("Valor");
+    TableColumn<Despesa, String> colDataD     = new TableColumn<>("Data");
 
-        colDescricao.setCellValueFactory(new PropertyValueFactory<>("descricao"));
-        colValorD.setCellValueFactory(new PropertyValueFactory<>("valor"));
-        colDataD.setCellValueFactory(new PropertyValueFactory<>("data"));
+    colDescricao.setCellValueFactory(new PropertyValueFactory<>("descricao"));
+    colValorD.setCellValueFactory(new PropertyValueFactory<>("valor"));
+    colDataD.setCellValueFactory(new PropertyValueFactory<>("data"));
 
-        tabelaDespesas.getColumns().addAll(colDescricao, colValorD, colDataD);
+    tabelaDespesas.getColumns().addAll(colDescricao, colValorD, colDataD);
 
-        atualizar();
+    atualizar();
 
-        layout.getChildren().addAll(
-            new Label("Receitas"), tabelaReceitas,
-            new Label("Despesas"), tabelaDespesas
-        );
+    Label lblReceitas = new Label("📋 Receitas");
+    lblReceitas.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2e9e4f;");
 
-        return layout;
+    Label lblDespesas = new Label("📋 Despesas");
+    lblDespesas.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2e9e4f;");
+
+    layout.getChildren().addAll(
+        lblReceitas, tabelaReceitas,
+        lblDespesas, tabelaDespesas
+    );
+
+    return layout;
     }
 }
