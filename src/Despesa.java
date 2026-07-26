@@ -5,7 +5,15 @@ public class Despesa extends Transacao implements Relatorio {
     public Despesa(String descricao, double valor, String data) {
         super(descricao, valor, data);
     }
+    private int id;
 
+    public int getId() {
+      return this.id;
+    }
+    public void setId(int id) {
+      this.id = id;
+    }
+    
     // Implementação obrigatória do método definido na interface Relatorio
    public void ExibirResumo() {
   System.out.println("┌─────────────────────────────────┐");

@@ -3,7 +3,7 @@ public class Receita extends Transacao implements Relatorio {
     private String nomeCliente;
     private String telefone;
     private String status;
-
+    private int id;
     // Construtor repassa os dados para a classe pai Transacao via super()
     public Receita(String descricao, double valor, String data, String nomeCliente, String telefone, String status) {
         super(descricao, valor, data);
@@ -13,6 +13,12 @@ public class Receita extends Transacao implements Relatorio {
         this.status = status;
     }
 
+    public int getId() {
+        return this.id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
     public String getNomeCliente() {
         return this.nomeCliente;
     }
