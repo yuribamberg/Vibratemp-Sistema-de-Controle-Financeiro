@@ -75,6 +75,9 @@ O sistema utiliza **SQLite** — o arquivo `vidracaria.db` é criado automaticam
 **Yuri Ivo Luiz Bamberg**
 
 Desenvolvido para uso interno da **Vibratemp Vidros Espelhos Molduras**
+
+R. Piauí, 1115 - Funcionários, Belo Horizonte
+
 📞 (31) 99586-3199
 
 ---
