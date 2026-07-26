@@ -73,7 +73,7 @@ O projeto segue uma modelagem orientada a objetos enxuta: `Transacao` como class
 
 1. **Copiar o JavaFX** — garanta que a pasta do JavaFX SDK está em `C:\javafx`
 2. **Copiar o Projeto** — coloque a pasta inteira do projeto no computador da loja
-3. **Executar** — dê dois cliques em `Iniciar.bat` (ou `Vibratemp.bat`) na pasta raiz do projeto
+3. **Executar** — dê dois cliques em `Rodar.bat` (ou `Vibratemp.bat`) na pasta raiz do projeto
 
 ---
 
