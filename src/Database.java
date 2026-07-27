@@ -56,11 +56,11 @@ public class Database {
             Connection conn = conectar();
             var stmt = conn.prepareStatement(sql);
             stmt.setString(1, receita.getNomeCliente());
-            stmt.setString(2, receita.gettelefone());
+            stmt.setString(2, receita.getTelefone());
             stmt.setString(3, receita.getDescricao());
             stmt.setDouble(4, receita.getValor());
             stmt.setString(5, receita.getData());
-            stmt.setString(6, receita.getstatus());
+            stmt.setString(6, receita.getStatus());
             stmt.executeUpdate();
             conn.close();
             System.out.println("Receita salva no banco!");

@@ -14,6 +14,8 @@ public class MainApp extends Application {
 
         TabPane tabPane = new TabPane();
 
+        System.out.println("VERSAO NOVA");
+        
         Tab tabReceita  = new Tab("Cadastrar Receita");
         Tab tabDespesa  = new Tab("Cadastrar Despesa");
         Tab tabListar   = new Tab("Listar");

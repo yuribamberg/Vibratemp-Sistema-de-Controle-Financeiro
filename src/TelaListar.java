@@ -3,11 +3,16 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.geometry.Insets;
 import java.util.ArrayList;
+import java.util.HashSet; // NOVO
+import java.util.Set;      // NOVO
 
 public class TelaListar {
 
     private static TableView<Receita> tabelaReceitas = new TableView<>();
     private static TableView<Despesa> tabelaDespesas = new TableView<>();
+
+    // NOVO: guarda quais receitas estão com a linha expandida
+    private static Set<Receita> linhasExpandidas = new HashSet<>();
 
     public static void atualizar() {
         tabelaReceitas.getItems().clear();
@@ -28,11 +33,60 @@ public class TelaListar {
         TableColumn<Receita, String> colStatus   = new TableColumn<>("Status");
 
         colCliente.setCellValueFactory(new PropertyValueFactory<>("nomeCliente"));
-        colServico.setCellValueFactory(new PropertyValueFactory<>("descricao"));
         colTelefone.setCellValueFactory(new PropertyValueFactory<>("telefone"));
         colData.setCellValueFactory(new PropertyValueFactory<>("data"));
         colValor.setCellValueFactory(new PropertyValueFactory<>("valor"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        // NOVO: célula customizada da coluna Serviço — clicável, expande a linha
+        colServico.setCellValueFactory(new PropertyValueFactory<>("descricao"));
+        colServico.setCellFactory(col -> new TableCell<Receita, String>() {
+            private final Label label = new Label();
+
+            {
+                label.prefWidthProperty().bind(colServico.widthProperty().subtract(10));
+                setOnMouseClicked(e -> {
+                    Receita r = getTableRow() != null ? getTableRow().getItem() : null;
+                    if (r == null) return;
+                    if (linhasExpandidas.contains(r)) {
+                        linhasExpandidas.remove(r);
+                    } else {
+                        linhasExpandidas.add(r);
+                    }
+                    getTableView().refresh();
+                });
+                setStyle("-fx-cursor: hand;");
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    Receita r = getTableRow() != null ? getTableRow().getItem() : null;
+                    boolean expandido = r != null && linhasExpandidas.contains(r);
+                    label.setWrapText(expandido);
+                    label.setText(item);
+                    setGraphic(label);
+                }
+            }
+        });
+
+        // NOVO: faz a linha crescer de altura quando o item estiver expandido
+        tabelaReceitas.setRowFactory(tv -> new TableRow<Receita>() {
+            @Override
+            protected void updateItem(Receita item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setPrefHeight(USE_COMPUTED_SIZE);
+                } else if (linhasExpandidas.contains(item)) {
+                    setPrefHeight(90);
+                } else {
+                    setPrefHeight(USE_COMPUTED_SIZE);
+                }
+            }
+        });
 
         TableColumn<Receita, Void> colExcluir = new TableColumn<>("Ação");
         colExcluir.setCellFactory(col -> new TableCell<>() {
@@ -52,6 +106,7 @@ public class TelaListar {
                         if (response == javafx.scene.control.ButtonType.OK) {
                             Database.excluirReceita(r.getId());
                             getTableView().getItems().remove(r);
+                            linhasExpandidas.remove(r); // NOVO: limpa referência ao excluir
                         }
                     });
                 });
@@ -75,6 +130,10 @@ public class TelaListar {
         colDescricao.setCellValueFactory(new PropertyValueFactory<>("descricao"));
         colValorD.setCellValueFactory(new PropertyValueFactory<>("valor"));
         colDataD.setCellValueFactory(new PropertyValueFactory<>("data"));
+
+        colServico.setMinWidth(150);
+        colStatus.setMinWidth(100);
+        colTelefone.setMinWidth(120);
 
         TableColumn<Despesa, Void> colExcluirD = new TableColumn<>("Ação");
         colExcluirD.setCellFactory(col -> new TableCell<>() {

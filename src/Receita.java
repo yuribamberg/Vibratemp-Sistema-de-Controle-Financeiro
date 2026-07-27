@@ -26,14 +26,14 @@ public class Receita extends Transacao implements Relatorio {
         this.nomeCliente = nomeCliente;
     }
 
-    public String gettelefone() {
+    public String getTelefone() {
         return this.telefone;
     }
     public void settelefone(String telefone) {
         this.telefone = telefone;
     }
 
-    public String getstatus() {
+    public String getStatus() {
         return this.status;
     }
     public void setstatus(String status) {
@@ -45,10 +45,10 @@ public class Receita extends Transacao implements Relatorio {
   System.out.println("┌─────────────────────────────────┐");
     System.out.println("│ Cliente : " + getNomeCliente());
     System.out.println("│ Serviço : " + getDescricao());
-    System.out.println("│ Telefone: " + gettelefone());
+    System.out.println("│ Telefone: " + getTelefone());
     System.out.println("│ Data    : " + getData());
     System.out.println("│ Valor   : R$ " + getValor());
-    System.out.println("│ Status  : " + getstatus());
+    System.out.println("│ Status  : " + getStatus());
   System.out.println("└─────────────────────────────────┘");
     }
 }
