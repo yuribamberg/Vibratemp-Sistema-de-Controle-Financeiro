@@ -24,6 +24,11 @@ public class TelaPesquisa {
         TableColumn<Receita, Double> colValor    = new TableColumn<>("Valor");
         TableColumn<Receita, String> colStatus   = new TableColumn<>("Status");
 
+        //Coluna mínima para visualização das informações
+        colServico.setMinWidth(150);
+        colStatus.setMinWidth(100);
+        colTelefone.setMinWidth(120);
+
         colCliente.setCellValueFactory(new PropertyValueFactory<>("nomeCliente"));
         colServico.setCellValueFactory(new PropertyValueFactory<>("descricao"));
         colTelefone.setCellValueFactory(new PropertyValueFactory<>("telefone"));
