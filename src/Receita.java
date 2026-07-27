@@ -1,54 +1,42 @@
-// Receita herda de Transacao (recebe descrição, valor e data) e implementa a interface Relatorio
 public class Receita extends Transacao implements Relatorio {
     private String nomeCliente;
     private String telefone;
     private String status;
+    private String tipoVidro;
     private int id;
-    // Construtor repassa os dados para a classe pai Transacao via super()
-    public Receita(String descricao, double valor, String data, String nomeCliente, String telefone, String status) {
+
+    public Receita(String descricao, double valor, String data, String nomeCliente, String telefone, String status, String tipoVidro) {
         super(descricao, valor, data);
-
         this.nomeCliente = nomeCliente;
         this.telefone = telefone;
         this.status = status;
+        this.tipoVidro = tipoVidro;
     }
 
-    public int getId() {
-        return this.id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
-    public String getNomeCliente() {
-        return this.nomeCliente;
-    }
-    public void setnomeCliente(String nomeCliente) {
-        this.nomeCliente = nomeCliente;
-    }
+    public int getId() { return this.id; }
+    public void setId(int id) { this.id = id; }
 
-    public String getTelefone() {
-        return this.telefone;
-    }
-    public void settelefone(String telefone) {
-        this.telefone = telefone;
-    }
+    public String getNomeCliente() { return this.nomeCliente; }
+    public void setNomeCliente(String nomeCliente) { this.nomeCliente = nomeCliente; }
 
-    public String getStatus() {
-        return this.status;
-    }
-    public void setstatus(String status) {
-        this.status = status;
-    }
+    public String getTelefone() { return this.telefone; }
+    public void setTelefone(String telefone) { this.telefone = telefone; }
 
-    // Implementação obrigatória do método definido na interface Relatorio
+    public String getStatus() { return this.status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public String getTipoVidro() { return this.tipoVidro; }
+    public void setTipoVidro(String tipoVidro) { this.tipoVidro = tipoVidro; }
+
     public void ExibirResumo() {
-  System.out.println("┌─────────────────────────────────┐");
-    System.out.println("│ Cliente : " + getNomeCliente());
-    System.out.println("│ Serviço : " + getDescricao());
-    System.out.println("│ Telefone: " + getTelefone());
-    System.out.println("│ Data    : " + getData());
-    System.out.println("│ Valor   : R$ " + getValor());
-    System.out.println("│ Status  : " + getStatus());
-  System.out.println("└─────────────────────────────────┘");
+        System.out.println("┌─────────────────────────────────┐");
+        System.out.println("│ Cliente : " + getNomeCliente());
+        System.out.println("│ Serviço : " + getDescricao());
+        System.out.println("│ Telefone: " + getTelefone());
+        System.out.println("│ Data    : " + getData());
+        System.out.println("│ Valor   : R$ " + getValor());
+        System.out.println("│ Status  : " + getStatus());
+        System.out.println("│ Tipo    : " + getTipoVidro());
+        System.out.println("└─────────────────────────────────┘");
     }
 }

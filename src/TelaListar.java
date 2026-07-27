@@ -118,10 +118,14 @@ public class TelaListar {
                 setGraphic(empty ? null : btn);
             }
         });
+        
+        TableColumn<Receita, String> colTipo = new TableColumn<>("Tipo");
+        colTipo.setCellValueFactory(new PropertyValueFactory<>("tipoVidro"));
+        colTipo.setMinWidth(80);
 
         tabelaReceitas.getColumns().addAll(
-            colCliente, colServico, colTelefone, colData, colValor, colStatus, colExcluir
-        );
+    colCliente, colServico, colTelefone, colData, colValor, colStatus, colTipo, colExcluir
+);
 
         TableColumn<Despesa, String> colDescricao = new TableColumn<>("Descrição");
         TableColumn<Despesa, Double> colValorD    = new TableColumn<>("Valor");
@@ -180,6 +184,7 @@ public class TelaListar {
             lblDespesas, tabelaDespesas
         );
 
+        
         return layout;
     }
 }

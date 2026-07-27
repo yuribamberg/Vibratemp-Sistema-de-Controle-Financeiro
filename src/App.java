@@ -38,7 +38,6 @@ public class App {
 
             switch (opcao) {
                 case 1: {
-                    // nextLine() após nextInt() é necessário para consumir o Enter que ficou no buffer
                     scanner.nextLine();
                     System.out.print("Nome do cliente: ");
                     String nomeCliente = scanner.nextLine();
@@ -59,7 +58,10 @@ public class App {
                     System.out.print("Status(Pago, não pago ou pago 50%): ");
                     String status = scanner.nextLine();
 
-                    Receita receita = new Receita(descricao, valor, data, nomeCliente, telefone, status);
+                    System.out.print("Tipo de Vidro(Temperado, Comum, Espelho, Moldura, Outro): ");
+                    String tipoVidro = scanner.nextLine();
+
+                    Receita receita = new Receita(descricao, valor, data, nomeCliente, telefone, status, tipoVidro);
                     Database.salvarReceita(receita);
 
                     System.out.println("Receita cadastrada!");

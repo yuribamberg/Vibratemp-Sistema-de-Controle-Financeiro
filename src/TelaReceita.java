@@ -18,6 +18,10 @@ public class TelaReceita {
         campoStatus.getItems().addAll("Pago", "Não Pago", "Pago 50%");
         campoStatus.setValue("Pago");
 
+        ComboBox<String> campoTipoVidro = new ComboBox<>();
+        campoTipoVidro.getItems().addAll("Temperado", "Comum", "Espelho", "Moldura", "Outro");
+        campoTipoVidro.setValue("Temperado");
+
         Button btnSalvar = new Button("Salvar Receita");
 
         btnSalvar.setOnAction(e -> {
@@ -26,6 +30,7 @@ public class TelaReceita {
             String telefone = campoTelefone.getText();
             String data     = campoData.getText();
             String status   = campoStatus.getValue();
+            String tipo     = campoTipoVidro.getValue();
 
             if (nome.isEmpty() || servico.isEmpty() || campoValor.getText().isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -38,32 +43,29 @@ public class TelaReceita {
 
             try {
                 double valor = Double.parseDouble(campoValor.getText());
-                Receita receita = new Receita(servico, valor, data, nome, telefone, status);
+                Receita receita = new Receita(servico, valor, data, nome, telefone, status, tipo);
                 Database.salvarReceita(receita);
 
                 Alert sucesso = new Alert(Alert.AlertType.INFORMATION);
-                    sucesso.setTitle("Sucesso");
-                    sucesso.setHeaderText(null);
-                    sucesso.setContentText("Cadastrado com sucesso!");
-                    sucesso.showAndWait();
+                sucesso.setTitle("Sucesso");
+                sucesso.setHeaderText(null);
+                sucesso.setContentText("Receita cadastrada com sucesso!");
+                sucesso.showAndWait();
 
-                // Limpa os campos após salvar
                 campoNome.clear();
                 campoServico.clear();
                 campoTelefone.clear();
                 campoData.clear();
                 campoValor.clear();
                 campoStatus.setValue("Pago");
+                campoTipoVidro.setValue("Temperado");
 
-                System.out.println("Receita salva!");
             } catch (NumberFormatException ex) {
-                System.out.println("Valor inválido!");
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Erro");
                 alert.setHeaderText(null);
                 alert.setContentText("Digite um valor válido! Use ponto para centavos. Ex: 150.50");
                 alert.showAndWait();
-
             }
         });
 
@@ -71,9 +73,10 @@ public class TelaReceita {
             new Label("Nome do Cliente:"), campoNome,
             new Label("Serviço:"),         campoServico,
             new Label("Telefone:"),        campoTelefone,
-            new Label("Data:"),            campoData,
-            new Label("Valor (R$) - use ponto para centavos:"),      campoValor,
+            new Label("Data (dd/mm/aaaa):"), campoData,
+            new Label("Valor (R$) - use ponto para centavos:"), campoValor,
             new Label("Status:"),          campoStatus,
+            new Label("Tipo de Vidro:"),   campoTipoVidro,
             btnSalvar
         );
 
