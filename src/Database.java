@@ -53,6 +53,22 @@ public class Database {
         }
     }
 
+
+    public static void atualizarStatusReceita(int id, String novoStatus) {
+        String sql = "UPDATE receitas SET status = ? WHERE id = ?";
+        try {
+            Connection conn = conectar();
+            var stmt = conn.prepareStatement(sql);
+            stmt.setString(1, novoStatus);
+            stmt.setInt(2, id);
+            stmt.executeUpdate();
+            conn.close();
+            System.out.println("Status atualizado!");
+        } catch (SQLException e) {
+            System.out.println("Erro ao atualizar status: " + e.getMessage());
+        }
+    }
+ 
     public static void salvarReceita(Receita receita) {
         String sql = "INSERT INTO receitas (nomeCliente, telefone, descricao, valor, data, status, tipoVidro) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try {

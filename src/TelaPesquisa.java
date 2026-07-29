@@ -3,8 +3,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.geometry.Insets;
 import java.util.ArrayList;
-import java.util.HashSet; // NOVO
-import java.util.Set;      // NOVO
 
 public class TelaPesquisa {
 
@@ -19,9 +17,6 @@ public class TelaPesquisa {
 
         TableView<Receita> tabela = new TableView<>();
 
-        // NOVO: guarda quais linhas estão expandidas
-        Set<Receita> linhasExpandidas = new HashSet<>();
-
         TableColumn<Receita, String> colCliente  = new TableColumn<>("Cliente");
         TableColumn<Receita, String> colServico  = new TableColumn<>("Serviço");
         TableColumn<Receita, String> colTelefone = new TableColumn<>("Telefone");
@@ -29,68 +24,92 @@ public class TelaPesquisa {
         TableColumn<Receita, Double> colValor    = new TableColumn<>("Valor");
         TableColumn<Receita, String> colStatus   = new TableColumn<>("Status");
 
-        //Coluna mínima para visualização das informações
-        colServico.setMinWidth(150);
-        colStatus.setMinWidth(100);
-        colTelefone.setMinWidth(120);
-
         colCliente.setCellValueFactory(new PropertyValueFactory<>("nomeCliente"));
+        colServico.setCellValueFactory(new PropertyValueFactory<>("descricao"));
         colTelefone.setCellValueFactory(new PropertyValueFactory<>("telefone"));
         colData.setCellValueFactory(new PropertyValueFactory<>("data"));
         colValor.setCellValueFactory(new PropertyValueFactory<>("valor"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        // NOVO: célula customizada da coluna Serviço — clicável, expande a linha
-        colServico.setCellValueFactory(new PropertyValueFactory<>("descricao"));
-        colServico.setCellFactory(col -> new TableCell<Receita, String>() {
-            private final Label label = new Label();
-
-            {
-                label.prefWidthProperty().bind(colServico.widthProperty().subtract(10));
-                setOnMouseClicked(e -> {
-                    Receita r = getTableRow() != null ? getTableRow().getItem() : null;
-                    if (r == null) return;
-                    if (linhasExpandidas.contains(r)) {
-                        linhasExpandidas.remove(r);
-                    } else {
-                        linhasExpandidas.add(r);
-                    }
-                    getTableView().refresh();
-                });
-                setStyle("-fx-cursor: hand;");
-            }
-
+        // Tooltip para expandir texto longo
+        colCliente.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setGraphic(null);
-                } else {
-                    Receita r = getTableRow() != null ? getTableRow().getItem() : null;
-                    boolean expandido = r != null && linhasExpandidas.contains(r);
-                    label.setWrapText(expandido);
-                    label.setText(item);
-                    setGraphic(label);
-                }
+                if (empty || item == null) { setText(null); setTooltip(null); }
+                else { setText(item); setTooltip(new Tooltip(item)); }
             }
         });
 
-        // NOVO: faz a linha crescer de altura quando o item estiver expandido
-        tabela.setRowFactory(tv -> new TableRow<Receita>() {
+        colServico.setCellFactory(col -> new TableCell<>() {
             @Override
-            protected void updateItem(Receita item, boolean empty) {
+            protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setPrefHeight(USE_COMPUTED_SIZE);
-                } else if (linhasExpandidas.contains(item)) {
-                    setPrefHeight(90);
-                } else {
-                    setPrefHeight(USE_COMPUTED_SIZE);
-                }
+                if (empty || item == null) { setText(null); setTooltip(null); }
+                else { setText(item); setTooltip(new Tooltip(item)); }
             }
         });
 
-        tabela.getColumns().addAll(colCliente, colServico, colTelefone, colData, colValor, colStatus);
+        colCliente.setMinWidth(120);
+        colServico.setMinWidth(130);
+        colTelefone.setMinWidth(110);
+        colStatus.setMinWidth(90);
+
+        // ── COLUNA MUDAR STATUS ──
+        TableColumn<Receita, Void> colMudarStatus = new TableColumn<>("Mudar Status");
+        colMudarStatus.setCellFactory(col -> new TableCell<>() {
+            private final Button btn = new Button("Alterar");
+            {
+                btn.setStyle("-fx-background-color: #2980b9; -fx-text-fill: white;");
+                btn.setOnAction(e -> {
+                    Receita r = getTableView().getItems().get(getIndex());
+                    ChoiceDialog<String> dialog = new ChoiceDialog<>(r.getStatus(),
+                        "Pago", "Não Pago", "Pago 50%");
+                    dialog.setTitle("Alterar Status");
+                    dialog.setHeaderText("Cliente: " + r.getNomeCliente());
+                    dialog.setContentText("Selecione o novo status:");
+                    dialog.showAndWait().ifPresent(novoStatus -> {
+                        Database.atualizarStatusReceita(r.getId(), novoStatus);
+                        r.setStatus(novoStatus);
+                        getTableView().refresh();
+                    });
+                });
+            }
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : btn);
+            }
+        });
+
+        // ── COLUNA EXCLUIR ──
+        TableColumn<Receita, Void> colExcluir = new TableColumn<>("Ação");
+        colExcluir.setCellFactory(col -> new TableCell<>() {
+            private final Button btn = new Button("Excluir");
+            {
+                btn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white;");
+                btn.setOnAction(e -> {
+                    Receita r = getTableView().getItems().get(getIndex());
+                    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+                    confirm.setTitle("Confirmar");
+                    confirm.setHeaderText(null);
+                    confirm.setContentText("Deseja excluir o registro de " + r.getNomeCliente() + "?");
+                    confirm.showAndWait().ifPresent(response -> {
+                        if (response == javafx.scene.control.ButtonType.OK) {
+                            Database.excluirReceita(r.getId());
+                            getTableView().getItems().remove(r);
+                        }
+                    });
+                });
+            }
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : btn);
+            }
+        });
+
+        tabela.getColumns().addAll(colCliente, colServico, colTelefone, colData, colValor, colStatus, colMudarStatus, colExcluir);
 
         btnPesquisar.setOnAction(e -> {
             String busca = campoBusca.getText();
@@ -105,7 +124,6 @@ public class TelaPesquisa {
             }
 
             tabela.getItems().clear();
-            linhasExpandidas.clear(); // NOVO: limpa expansões da pesquisa anterior
             ArrayList<Receita> resultado = Database.pesquisarCliente(busca);
 
             if (resultado.isEmpty()) {
@@ -119,10 +137,14 @@ public class TelaPesquisa {
             }
         });
 
+        Label dica = new Label("💡 Passe o mouse sobre o nome ou serviço para ver o texto completo.");
+        dica.setStyle("-fx-font-size: 10px; -fx-text-fill: #666666;");
+
         layout.getChildren().addAll(
             new Label("Pesquisar:"),
             campoBusca,
             btnPesquisar,
+            dica,
             tabela
         );
 

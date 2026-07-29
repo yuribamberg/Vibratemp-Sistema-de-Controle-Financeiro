@@ -3,16 +3,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.geometry.Insets;
 import java.util.ArrayList;
-import java.util.HashSet; // NOVO
-import java.util.Set;      // NOVO
 
 public class TelaListar {
 
     private static TableView<Receita> tabelaReceitas = new TableView<>();
     private static TableView<Despesa> tabelaDespesas = new TableView<>();
-
-    // NOVO: guarda quais receitas estão com a linha expandida
-    private static Set<Receita> linhasExpandidas = new HashSet<>();
 
     public static void atualizar() {
         tabelaReceitas.getItems().clear();
@@ -25,108 +20,106 @@ public class TelaListar {
         VBox layout = new VBox(15);
         layout.setPadding(new Insets(20));
 
+        // ── COLUNAS DE RECEITA ──
         TableColumn<Receita, String> colCliente  = new TableColumn<>("Cliente");
         TableColumn<Receita, String> colServico  = new TableColumn<>("Serviço");
         TableColumn<Receita, String> colTelefone = new TableColumn<>("Telefone");
         TableColumn<Receita, String> colData     = new TableColumn<>("Data");
         TableColumn<Receita, Double> colValor    = new TableColumn<>("Valor");
         TableColumn<Receita, String> colStatus   = new TableColumn<>("Status");
+        TableColumn<Receita, String> colTipo     = new TableColumn<>("Tipo");
 
         colCliente.setCellValueFactory(new PropertyValueFactory<>("nomeCliente"));
+        colServico.setCellValueFactory(new PropertyValueFactory<>("descricao"));
         colTelefone.setCellValueFactory(new PropertyValueFactory<>("telefone"));
         colData.setCellValueFactory(new PropertyValueFactory<>("data"));
         colValor.setCellValueFactory(new PropertyValueFactory<>("valor"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        colTipo.setCellValueFactory(new PropertyValueFactory<>("tipoVidro"));
 
-        // NOVO: célula customizada da coluna Serviço — clicável, expande a linha
-        colServico.setCellValueFactory(new PropertyValueFactory<>("descricao"));
-        colServico.setCellFactory(col -> new TableCell<Receita, String>() {
-            private final Label label = new Label();
-
-            {
-                label.prefWidthProperty().bind(colServico.widthProperty().subtract(10));
-                setOnMouseClicked(e -> {
-                    Receita r = getTableRow() != null ? getTableRow().getItem() : null;
-                    if (r == null) return;
-                    if (linhasExpandidas.contains(r)) {
-                        linhasExpandidas.remove(r);
-                    } else {
-                        linhasExpandidas.add(r);
-                    }
-                    getTableView().refresh();
-                });
-                setStyle("-fx-cursor: hand;");
-            }
-
+        // Tooltip para expandir texto longo
+        colCliente.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setGraphic(null);
-                } else {
-                    Receita r = getTableRow() != null ? getTableRow().getItem() : null;
-                    boolean expandido = r != null && linhasExpandidas.contains(r);
-                    label.setWrapText(expandido);
-                    label.setText(item);
-                    setGraphic(label);
-                }
+                if (empty || item == null) { setText(null); setTooltip(null); }
+                else { setText(item); setTooltip(new Tooltip(item)); }
             }
         });
 
-        // NOVO: faz a linha crescer de altura quando o item estiver expandido
-        tabelaReceitas.setRowFactory(tv -> new TableRow<Receita>() {
+        colServico.setCellFactory(col -> new TableCell<>() {
             @Override
-            protected void updateItem(Receita item, boolean empty) {
+            protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setPrefHeight(USE_COMPUTED_SIZE);
-                } else if (linhasExpandidas.contains(item)) {
-                    setPrefHeight(90);
-                } else {
-                    setPrefHeight(USE_COMPUTED_SIZE);
-                }
+                if (empty || item == null) { setText(null); setTooltip(null); }
+                else { setText(item); setTooltip(new Tooltip(item)); }
             }
         });
 
-        TableColumn<Receita, Void> colExcluir = new TableColumn<>("Ação");
-        colExcluir.setCellFactory(col -> new TableCell<>() {
-            private final Button btn = new Button("Excluir");
+        colCliente.setMinWidth(120);
+        colServico.setMinWidth(130);
+        colTelefone.setMinWidth(110);
+        colStatus.setMinWidth(90);
+        colTipo.setMinWidth(90);
 
+        // ── COLUNA MUDAR STATUS ──
+        TableColumn<Receita, Void> colMudarStatus = new TableColumn<>("Mudar Status");
+        colMudarStatus.setCellFactory(col -> new TableCell<>() {
+            private final Button btn = new Button("Alterar");
             {
-                btn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white;");
+                btn.setStyle("-fx-background-color: #2980b9; -fx-text-fill: white;");
                 btn.setOnAction(e -> {
                     Receita r = getTableView().getItems().get(getIndex());
-
-                    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-                    confirm.setTitle("Confirmar");
-                    confirm.setHeaderText(null);
-                    confirm.setContentText("Deseja excluir o registro de " + r.getNomeCliente() + "?");
-
-                    confirm.showAndWait().ifPresent(response -> {
-                        if (response == javafx.scene.control.ButtonType.OK) {
-                            Database.excluirReceita(r.getId());
-                            getTableView().getItems().remove(r);
-                            linhasExpandidas.remove(r); // NOVO: limpa referência ao excluir
-                        }
+                    ChoiceDialog<String> dialog = new ChoiceDialog<>(r.getStatus(),
+                        "Pago", "Não Pago", "Pago 50%");
+                    dialog.setTitle("Alterar Status");
+                    dialog.setHeaderText("Cliente: " + r.getNomeCliente());
+                    dialog.setContentText("Selecione o novo status:");
+                    dialog.showAndWait().ifPresent(novoStatus -> {
+                        Database.atualizarStatusReceita(r.getId(), novoStatus);
+                        atualizar();
                     });
                 });
             }
-
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
                 setGraphic(empty ? null : btn);
             }
         });
-        
-        TableColumn<Receita, String> colTipo = new TableColumn<>("Tipo");
-        colTipo.setCellValueFactory(new PropertyValueFactory<>("tipoVidro"));
-        colTipo.setMinWidth(80);
+
+        // ── COLUNA EXCLUIR RECEITA ──
+        TableColumn<Receita, Void> colExcluir = new TableColumn<>("Ação");
+        colExcluir.setCellFactory(col -> new TableCell<>() {
+            private final Button btn = new Button("Excluir");
+            {
+                btn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white;");
+                btn.setOnAction(e -> {
+                    Receita r = getTableView().getItems().get(getIndex());
+                    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+                    confirm.setTitle("Confirmar");
+                    confirm.setHeaderText(null);
+                    confirm.setContentText("Deseja excluir o registro de " + r.getNomeCliente() + "?");
+                    confirm.showAndWait().ifPresent(response -> {
+                        if (response == javafx.scene.control.ButtonType.OK) {
+                            Database.excluirReceita(r.getId());
+                            getTableView().getItems().remove(r);
+                        }
+                    });
+                });
+            }
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : btn);
+            }
+        });
 
         tabelaReceitas.getColumns().addAll(
-    colCliente, colServico, colTelefone, colData, colValor, colStatus, colTipo, colExcluir
-);
+            colCliente, colServico, colTelefone, colData, colValor, colStatus, colTipo, colMudarStatus, colExcluir
+        );
 
+        // ── COLUNAS DE DESPESA ──
         TableColumn<Despesa, String> colDescricao = new TableColumn<>("Descrição");
         TableColumn<Despesa, Double> colValorD    = new TableColumn<>("Valor");
         TableColumn<Despesa, String> colDataD     = new TableColumn<>("Data");
@@ -135,24 +128,27 @@ public class TelaListar {
         colValorD.setCellValueFactory(new PropertyValueFactory<>("valor"));
         colDataD.setCellValueFactory(new PropertyValueFactory<>("data"));
 
-        colServico.setMinWidth(150);
-        colStatus.setMinWidth(100);
-        colTelefone.setMinWidth(120);
+        colDescricao.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) { setText(null); setTooltip(null); }
+                else { setText(item); setTooltip(new Tooltip(item)); }
+            }
+        });
 
+        // ── COLUNA EXCLUIR DESPESA ──
         TableColumn<Despesa, Void> colExcluirD = new TableColumn<>("Ação");
         colExcluirD.setCellFactory(col -> new TableCell<>() {
             private final Button btn = new Button("Excluir");
-
             {
                 btn.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white;");
                 btn.setOnAction(e -> {
                     Despesa d = getTableView().getItems().get(getIndex());
-
                     Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
                     confirm.setTitle("Confirmar");
                     confirm.setHeaderText(null);
                     confirm.setContentText("Deseja excluir a despesa: " + d.getDescricao() + "?");
-
                     confirm.showAndWait().ifPresent(response -> {
                         if (response == javafx.scene.control.ButtonType.OK) {
                             Database.excluirDespesa(d.getId());
@@ -161,7 +157,6 @@ public class TelaListar {
                     });
                 });
             }
-
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
@@ -179,12 +174,15 @@ public class TelaListar {
         Label lblDespesas = new Label("📋 Despesas");
         lblDespesas.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2e9e4f;");
 
+        Label dica = new Label("💡 Passe o mouse sobre o nome ou serviço para ver o texto completo.");
+        dica.setStyle("-fx-font-size: 10px; -fx-text-fill: #666666;");
+
         layout.getChildren().addAll(
+            dica,
             lblReceitas, tabelaReceitas,
             lblDespesas, tabelaDespesas
         );
 
-        
         return layout;
     }
 }
