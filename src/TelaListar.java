@@ -33,6 +33,19 @@ public class TelaListar {
         colServico.setCellValueFactory(new PropertyValueFactory<>("descricao"));
         colTelefone.setCellValueFactory(new PropertyValueFactory<>("telefone"));
         colData.setCellValueFactory(new PropertyValueFactory<>("data"));
+        colData.setComparator((data1,data2) -> {
+            try {
+                String[] p1 = data1.split("/");
+                String[] p2 = data2.split("/");
+        //Converte para aaaa-mm-dd para comparar corretamente
+                String d1 = p1[2] + p1[1] + p1[0];
+                String d2 = p2[2] + p2[1] + p2[0];
+            return d1.compareTo(d2);
+            } catch (Exception e ) {
+                return 0;
+            }
+        });
+
         colValor.setCellValueFactory(new PropertyValueFactory<>("valor"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         colTipo.setCellValueFactory(new PropertyValueFactory<>("tipoVidro"));
